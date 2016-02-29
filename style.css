@@ -1,0 +1,78 @@
+html{
+	height: 100%;
+}
+body{
+	height: 100%;
+	background: #7DB8C6;
+}
+.col-md-6{
+	-webkit-animation-delay: 1.5s; /* Chrome, Safari, Opera */
+    animation-delay: 1.5s;
+}
+.logo{
+	padding: 50px 0;
+	width: 200px;
+}
+.date{
+	background: #ED906B;
+	padding: 10px 30px;
+	border:3px solid white;
+	border-radius: 20px;
+	-webkit-border-radius: 20px;
+	-moz-border-radius: 20px;
+	color: white;
+	font-family: 'Oswald', sans-serif;
+}
+.date:hover{
+	background: #C25429;
+	border:3px solid white;
+	color: white;
+}
+.activity{
+
+}
+.inputLogo{
+	width: 100px;
+	margin-bottom: -18px;
+}
+.infoHolder{
+	background: white;
+	width: 100%;
+	padding: 26px 0 10px 0px;
+	min-width: 100px;
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	float: right;
+}
+.infoHolder p{
+	color: #32656D;
+	letter-spacing: 1px;
+	text-align: center;
+	font-family: 'Oswald', sans-serif;
+}
+.spacer{
+	margin: 40px 0 0 0;
+}
+.note{
+	text-align: center;
+	color: white;
+}
+#map-canvas{
+	width: 90%;
+    height: 200px;
+    display: block;
+    margin: 10px auto;
+    border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+}
+#map-canvas-dinner{
+	width: 90%;
+    height: 200px;
+    display: block;
+    margin: 10px auto;
+    border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+}

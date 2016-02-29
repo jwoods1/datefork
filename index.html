@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Datefort</title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+        <link rel="stylesheet" href="style.css">
+        <link rel="stylesheet" href="css/animate.css">
+
+        <!-- Fonts -->
+        <link href='http://fonts.googleapis.com/css?family=Oswald:700' rel='stylesheet' type='text/css'>
+
+
+        <!-- Get Scripts -->
+    	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <!-- <script src="app/event.js"></script>-->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <script type="text/javascript" src="http://oauth.googlecode.com/svn/code/javascript/oauth.js"></script>
+		<script type="text/javascript" src="http://oauth.googlecode.com/svn/code/javascript/sha1.js"></script>
+
+        <!-- BEGIN ARCGIS -->
+		<link rel="stylesheet" href="http://js.arcgis.com/3.13/esri/css/esri.css">
+		<script src="http://js.arcgis.com/3.13/"></script>
+		<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
+		<script>
+			function getActivityJson(activityCallback) {
+				var amenities = [
+					"Archery",
+					"Baseball",
+					"Basketball",
+					"Birding",
+					"BMX Jump Park",
+					"Bocce",
+					"Cricket",
+					"Disc Golf",
+					"Fishing",
+					//"Golf%20Clubhouse",
+					"Golf",
+                    "Horseshoes",
+                    "Outdoor Gym",
+					"Pickleball",
+                    "Places to Walk",
+					"Skateboard",
+					"Soccer",
+					"Softball",
+					"Tennis",
+					"Volleyball",
+					//"Trailhead"
+				];
+				
+				var descriptive = {
+					"Baseball" : "Play Baseball",
+					"Basketball" : "Play Basketball",
+					"Birding" : "Go Bird Watching",
+					"BMX Jump Park" : "Ride your BMX",
+					"Bocce" : "Play Bocce",
+					"Cricket" : "Play Cricket",
+					"Disc Golf" : "Play Frisby Golf",
+					"Equestrian Arena" : "Ride Your Horse",
+					"Fishing" : "Go Fishing",
+                    "Golf" : "Go Golfing",
+					//"Golf Clubhouse" : "Go Golfing",
+					"Pickleball" : "Play Pickleball",
+                    "Places to Walk" : "Take a Walk",
+					"Skateboard" : "Go Skateboarding",
+					"Soccer" : "Play Soccer",
+					"Softball" : "Play Softball",
+					"Tennis" : "Play Tennis",
+                    "Volleyball" : "Play Volleyball"
+					//"Ice Skating" : "Go Ice Skating",
+					//"Swimming Pool" : "Go Swimming",
+					//"Trailhead" : "Hike",
+					//"Zoo" : "Visit",
+				}
+				
+				var activity = amenities[Math.floor(Math.random() * amenities.length)];
+				var qsActivity = activity.replace(' ', '+');
+//			    var notParkAmenities = [
+//					"Archery",
+//					"Golf Clubhouse",
+//					"Ice Skating",
+//					"Nature	Center",
+//					"Dog Off-leash area",
+//					"Swimming Pool",
+//					"Trailhead",
+//					"Zoo"
+//				]
+//						
+				var isPark = true;
+				var tableNumber = 1;
+				var query = "%27AmenityType%27%3D%27" + qsActivity+"%27";
+				var outFields = "ParkName,ParkID";
+				var placeName = "";
+                var place = "";
+                //Boise Parks Amenities dataset
+                var url = "http://opendata.cityofboise.org/datasets/7533d78ac95c45f88dba9b7d85e1c75c_0.geojson?where=" + query;
+               // OLD End Point var url = "http://opendata.cityofboise.org/datasets/ce4319eec7d84fb0a262f87ddd53e874_0.geojson?where=" + query;
+                var address = "";
+
+//				for (i=0; i < notParkAmenities.length && isPark; i++) {
+//					if (activity == notParkAmenities[i]) {
+//						isPark = false;
+//					}
+//				}
+//				if (!isPark) {
+//             	//set vars
+//					tableNumber = 0;
+//					query = "StreetName+is+not+null";
+//					outFields = "FacilityName,Address";
+//                    //Boise Parks Facilities dataset
+//                    url = "http://opendata.cityofboise.org/datasets/f3f869a1a23648219560176e785d0c06_0.geojson?where=" + query;
+
+//				}
+                			 
+			    console.log('Amenities query: ' + url);
+
+			    $.get(url, function (data) {
+			        // var jsonObj = $.parseJSON(data)
+			        var choices = data.features;			        
+			        place = choices[Math.floor(Math.random() * choices.length)]
+
+			        if (isPark) {
+			            placeName = place.properties.ParkName;
+			            var parkID = place.properties.ParkID;
+
+			            console.log(placeName + ':' + parkID);
+
+			            var addressJson = "http://services1.arcgis.com/WHM6qC35aMtyAAlN/arcgis/rest/services/Boise_Parks_and_Reserves_Open_Data/FeatureServer/0/query?outFields=Address&where=ParkID=" + parkID + "&f=pjson";
+			            //   var addressJson = "http://opendata.cityofboise.org/datasets/f3f869a1a23648219560176e785d0c06_0.geojson?where= + query
+
+			            console.log('park address: ' + addressJson);
+
+			            $.get(addressJson, function (data2) {
+
+			                var addressFeature = $.parseJSON(data2);
+
+			                console.log('data2: ' + data2);
+			                //console.log(addressFeature.features[0].attributes.Address);
+
+			                if (!addressFeature.features) {
+			                    console.log('no features');
+			                    return getActivityJson(activityCallback);
+			                } else {
+			                    address = addressFeature.features[0].attributes.Address;
+			                }
+
+
+			                console.log(address);
+
+			                //                                if (addressFeature.features.attributes.Address) {
+			                //			                        address = addressFeature.features.attributes.Address;
+			                //			                    } else if (addressFeature.features[0].attributes.Address) {
+			                //			                        address = addressFeature.features[0].attributes.Address;
+			                //			                    } else {
+			                //			                        getActivityJson(getRestaurantData);
+			                //			                    }
+
+
+			                var activityObj = {
+			                    "activity": descriptive[activity] ? descriptive[activity] : activity,
+			                    "placeName": placeName,
+			                    "address": address
+			                }
+			                activityCallback(activityObj);
+
+			            })
+			        }
+			        //					else {                       
+			        //						placeName = place.properties.FacilityName;
+			        //						address= place.properties.Address;
+			        //						var activityObj = {
+			        //								"activity" : descriptive[activity] ? descriptive[activity] : activity,
+			        //								"placeName" : placeName,
+			        //								"address" : address
+			        //								}
+			        //								activityCallback(activityObj);
+			        //					}
+
+			    });
+							
+			}
+			function activityJsonCallback(activityObject) {
+				$('.activity').html(activityObject.activity);
+				$('.placeName').html(activityObject.placeName);
+				$('.address').html(activityObject.address);
+			}
+
+			function refreshData(){
+				initialize();
+				getActivityJson(getRestaurantData);
+			}
+			
+			function getRestaurantData(activityObject){
+				activityJsonCallback(activityObject);
+              var auth = {
+				consumerKey : "YM0N3ONrsgd4WxF3q2ccEg",
+				consumerSecret : "1TCQq2klqj_pUwesfWrMZygSb5Q",
+				accessToken : "WGta5OjotxUBoUKp7bV2GimzYd3dgfAi",
+				accessTokenSecret : "CD4vtEiS1pzPX_5ULtuKfN9Ikjw",
+				serviceProvider : {
+					signatureMethod : "HMAC-SHA1"
+				}
+			};
+			var terms = 'restaurants';
+            
+			var near = activityObject.address + " Boise, ID&limit=20&radius_filter=1000";
+			var accessor = {
+				consumerSecret : auth.consumerSecret,
+				tokenSecret : auth.accessTokenSecret
+			};
+			parameters = [];
+			parameters.push(['term', terms]);
+			parameters.push(['location', near]);
+			parameters.push(['callback', 'cb']);
+			parameters.push(['oauth_consumer_key', auth.consumerKey]);
+			parameters.push(['oauth_consumer_secret', auth.consumerSecret]);
+			parameters.push(['oauth_token', auth.accessToken]);
+			parameters.push(['oauth_signature_method', 'HMAC-SHA1']);
+			var message = {
+				'action' : 'http://api.yelp.com/v2/search',
+				'method' : 'GET',
+				'parameters' : parameters
+			};
+			OAuth.setTimestampAndNonce(message);
+			OAuth.SignatureMethod.sign(message, accessor);
+			var parameterMap = OAuth.getParameterMap(message.parameters);
+			parameterMap.oauth_signature = OAuth.percentEncode(parameterMap.oauth_signature)
+			$.ajax({
+			    'url': message.action,
+			    'data': parameterMap,
+			    'cache': true,
+			    'dataType': 'jsonp',
+			    'jsonpCallback': 'cb',
+			    'success': function (data, textStats, XMLHttpRequest) {
+
+			        var choices = data.businesses;
+			        place = choices[Math.floor(Math.random() * choices.length)]
+			        $('.restaurant').html(place.name);
+			        $('.star-rating').attr("src", place.rating_img_url);
+
+                    // Yelp gives us Lat/Long for free ... let's use it instead of geocode
+			        console.log(place.location.coordinate);
+			        geocode(activityObject.address, activityMap);
+			    }
+			});
+			}
+			function dropPin(latitude, longitude, whichMap) {
+					var activityLatlng = new google.maps.LatLng(latitude ,longitude);
+					var iconBase = './img/';
+					var marker = new google.maps.Marker({
+					  position: activityLatlng,
+					  animation: google.maps.Animation.DROP,
+					  map: whichMap,
+					  icon: whichMap == activityMap ? iconBase + 'activityPin.png' : iconBase + 'dinnerPin.png'
+			});
+
+console.log(place.location);
+
+					if (whichMap == activityMap) {
+						activityMap.setCenter(activityLatlng);
+                        geocode(place.location.address[0], dinnerMap);
+					}
+					else {
+						dinnerMap.setCenter(activityLatlng)
+					}
+}
+
+
+
+			function setMaps(data, address, whichMap) {
+				if (data.results[0].locations.length < 1){
+						$.ajax ({
+							dataType: "json",
+							url: "https://maps.googleapis.com/maps/api/geocode/json?address=" + address + ",+Boise,+ID"
+						}).done(function(googleData){
+							var latitude = googleData.results[0].geometry.location.lat;
+							var longitude = googleData.results[0].geometry.location.lng;
+							dropPin(latitude, longitude, whichMap);
+						});
+					}
+
+					else{
+
+						var latitude = data.results[0].locations[0].latLng.lat;
+						var longitude = data.results[0].locations[0].latLng.lng;
+						dropPin(latitude, longitude, whichMap);
+					}
+
+			}
+			function geocode(address, whichMap){
+			console.log('geocode: ' + address);
+            	$.ajax({
+					dataType: "jsonp",
+					url: "http://open.mapquestapi.com/geocoding/v1/address?key=Fmjtd%7Cluu82l0y21%2C2n%3Do5-94z0gu&location="
+							+ address + ",+Boise,+ID&inFormat=json"
+				}).done(function(data){
+                console.log('geocode after ' + data);
+					setMaps(data, address, whichMap);
+				});
+			}
+			
+			var activityMap;
+			var dinnerMap;
+
+			// Refresh Data
+			$(document).ready(function() {
+				getActivityJson(getRestaurantData);
+			});
+
+			/* Map The Activity */
+			function initialize() {
+				var myLatlng = new google.maps.LatLng(43.6261601,-116.189266);
+				var mapOptions = {
+					zoom: 12,
+					center: myLatlng
+				}
+				activityMap = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+				dinnerMap = new google.maps.Map(document.getElementById('map-canvas-dinner'), mapOptions);
+
+			}
+
+
+			//show map
+			
+			google.maps.event.addDomListener(window, 'load', initialize);
+
+		</script>
+		
+		</head>
+
+		<body>
+
+			<div class="container">
+				<div class="row">
+					<img src="img/logo.svg" class="center-block logo animated bounceInDown">
+				</div>
+				<div class="row spacer">
+
+					<div class="col-md-6 animated bounceIn">
+						<img src="img/activity.svg" class="activity inputLogo center-block">
+						<div class="infoHolder center-block">
+							<p><span class="activity"></span> at <span class="placeName"></span></p>
+							<div id="map-canvas"></div>
+						</div>
+					</div>
+					<div class="col-md-6 animated bounceIn">
+						<img src="img/dinner.svg" class="dinner inputLogo center-block">
+						<div class="infoHolder center-block">
+							<p>
+								<span>Eat at </span>
+								<span class="restaurant"></span> 
+								
+								<img class="star-rating" src="">
+							</p>
+							<div id="map-canvas-dinner"></div>
+						</div>
+					</div>
+
+				</div>
+				<div class="row spacer">
+					<button class="btn btn-default date center-block" type="submit" onClick="refreshData()">RAN-DATE-OMIZE</button>
+				</div>
+				<div class="row spacer">
+					<p class="note">*Bring your own supplies and date.</p>
+				</div>
+
+				<div id="map-canvas"></div>
+			</div>
+
+			
+			
+		</body>
+</html>
+
+
